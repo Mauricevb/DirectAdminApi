@@ -1,0 +1,8 @@
+*.tmp*
+*.sublime*
+*.komodo*
+.DS_Store
+._*
+.idea/
+.*.sw[op]
+.fuse*
