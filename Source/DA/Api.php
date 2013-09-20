@@ -16,6 +16,12 @@ abstract class DA_Api {
 	protected $domain;
 
 	/**
+	 * The cache array
+	 * @var array
+	 */
+	protected $cache = array();
+
+	/**
 	 * an instance of HTTPSocket which can be set to default, so you don't have to pass this into every DA_Api instance
 	 * @var HTTPSocket
 	 */
@@ -56,6 +62,33 @@ abstract class DA_Api {
 			throw new DA_Exception('No domain set, use the setDomain method to set one!');
 		}
 		return $domain;
+	}
+
+	/**
+	 * Query the socket and cache the result
+	 * 
+	 * @author    Jelle De Loecker <jelle@codedor.be>
+	 * @since     1.1.0
+	 * @version   1.1.0
+	 *
+	 * @param     string   $command   Command to get
+	 * @param     array    $options   Options to pass
+	 *
+	 */
+	public function query($command, $options = array()) {
+
+		$hash = $command . '-' . json_encode($options);
+
+		if (!isset($this->cache[$hash])) {
+			// Make the request
+			$this->sock->query($command, $options);
+			
+			// Get the response
+			$this->cache[$hash] = $this->sock->fetch_parsed_body();
+		}
+
+		// Return the result in the cache
+		return $this->cache[$hash];
 	}
 
 }
